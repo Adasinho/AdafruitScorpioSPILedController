@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cmake",
+			"label": "CMake: kompiluj",
+			"command": "build",
+			"targets": [
+				"all"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Zadanie kompiluj szablonu narzędzia CMake",
+			"options": {
+				"cmakeArgs": [
+					"-DCMAKE_C_COMPILER=/usr/bin/arm-none-eabi-gcc",
+					"-DCMAKE_CXX_COMPILER=/usr/bin/arm-none-eabi-g++"
+				]
+			}
+		}
+	]
+}

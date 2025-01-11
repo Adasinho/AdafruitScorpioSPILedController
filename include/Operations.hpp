@@ -1,0 +1,11 @@
+#ifndef OPERATIONS_HPP
+#define OPERATIONS_HPP
+
+enum Operation {
+    SET_DIODE_COLOR = 0,
+    SET_BRIGHTNES = 1,
+    SET_STRIP_ANIMATION = 2,
+    SET_STRIP_SOLID_COLOR = 3
+};
+
+#endif // OPERATIONS_HPP
