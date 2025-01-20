@@ -1,4 +1,5 @@
 #include "AnimationManager.hpp"
+#include "Logger.hpp"
 
 AnimationManager::AnimationManager()
 {
@@ -7,13 +8,13 @@ AnimationManager::AnimationManager()
 
 AnimationManager::AnimationManager(Adafruit_NeoPXL8 *pixels)
 {
-    printf("[AnimationManager] constructor\n");
+    Logger::log(LogLevel::DEBUG, "[AnimationManager] constructor");
     this->pixels = pixels;
 }
 
 void AnimationManager::update()
 {
-    //printf("[AnimationManager] update\n");
+    //Logger::log(LogLevel::INFO, "[AnimationManager] update");
     std::vector<StripId> stripsToStopAnimate;
 
     uint32_t owner_id; 
@@ -24,13 +25,13 @@ void AnimationManager::update()
                 const StripId& id = pair.first;
                 Animation* animation = pair.second.get();
 
-                printf("[AnimationManager] next frame for strip: %d\n", id);
+                Logger::log(LogLevel::DEBUG, "[AnimationManager] next frame for strip: %d", id);
 
                 if(animation->isFinished()) stripsToStopAnimate.push_back(id);
                 else animation->nextFrame();
             } else {
                 const StripId& id = pair.first;
-                printf("Animation for strip %d, not exist", static_cast<int>(id));
+                Logger::log(LogLevel::WARNING, "Animation for strip %d, not exist", static_cast<int>(id));
             }
         }
 
@@ -45,7 +46,7 @@ void AnimationManager::update()
 void AnimationManager::playAnimation(StripId id, std::unique_ptr<Animation> animation)
 {
     this->blocking = true;
-    printf("[AnimationManager] playAnimation for strip %d \n", id);
+    Logger::log(LogLevel::DEBUG, "[AnimationManager] playAnimation for strip %d", id);
     //this->animations[id] = std::move(animation);
 
     if(this->animations[id]) {
@@ -53,14 +54,14 @@ void AnimationManager::playAnimation(StripId id, std::unique_ptr<Animation> anim
     }
     
     this->animations[id] = std::move(animation);
-    //printf("[AnimationManager] After playAnimation for strip %d \n", id);
+    //Logger::log(LogLevel::DEBUG, "[AnimationManager] After playAnimation for strip %d", id);
     this->blocking = false;
 }
 
 void AnimationManager::stopAnimation(StripId id)
 {
-    printf("[AnimationManager] stopAnimation for strip %d \n", id);
-    printf("[AnimationManager] Size of: %d\n", this->animations.size());
+    Logger::log(LogLevel::DEBUG, "[AnimationManager] stopAnimation for strip %d", id);
+    Logger::log(LogLevel::DEBUG, "[AnimationManager] Size of: %d", this->animations.size());
     this->animations.erase(id);
     
 }

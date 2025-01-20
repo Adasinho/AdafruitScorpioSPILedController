@@ -1,4 +1,5 @@
 #include "LedStripsManager.hpp"
+#include "Logger.hpp"
 
 // LedStripsManager::LedStripsManager()
 // {
@@ -7,7 +8,7 @@
 
 LedStripsManager::LedStripsManager(const std::vector<LedStripConfig>& configs)
 {
-    printf("[LedStripsManager] constructor\n");
+    Logger::log(LogLevel::DEBUG, "[LedStripsManager] constructor");
     // policzenie wirtualnych pinów na potrzeby biblioteki Adafruit_NeoPXL8
     this->calculateVirtualLeds(configs);
 
@@ -27,7 +28,7 @@ LedStripsManager::LedStripsManager(const std::vector<LedStripConfig>& configs)
         StripId stripId = config.getStripId();
         int parsedId = static_cast<int>(config.getStripId());
         int virtualFirstLedNumber = this->getFirstStripLedNumber(stripId, configs);
-        printf("virtualFirstLedNumber: %d\n", virtualFirstLedNumber);
+        Logger::log(LogLevel::DEBUG, "virtualFirstLedNumber: %d", virtualFirstLedNumber);
         this->strips[parsedId] = std::make_unique<LedStrip>(config, virtualFirstLedNumber, this->pixels.get());
     }
 }
@@ -80,8 +81,8 @@ void LedStripsManager::calculateVirtualLeds(const std::vector<LedStripConfig>& c
     this->virtualLedsEachStrip = longestStrip;
     this->totalVirtualLeds = longestStrip * configs.size();
 
-    printf("[LedStripsManager] virtualLedsEachStrip(%d)\n", virtualLedsEachStrip);
-    printf("[LedStripsManager] totalVirtualLeds(%d)\n", totalVirtualLeds);
+    Logger::log(LogLevel::DEBUG, "[LedStripsManager] virtualLedsEachStrip(%d)", virtualLedsEachStrip);
+    Logger::log(LogLevel::DEBUG, "[LedStripsManager] totalVirtualLeds(%d)", totalVirtualLeds);
 }
 
 int LedStripsManager::getFirstStripLedNumber(StripId id, const std::vector<LedStripConfig>& configs)
@@ -92,7 +93,7 @@ int LedStripsManager::getFirstStripLedNumber(StripId id, const std::vector<LedSt
         else i++;
     }
 
-    printf("[LedStripsManager] getFirstStripLedNumber not found\n");
+    Logger::log(LogLevel::WARNING, "[LedStripsManager] getFirstStripLedNumber not found");
 
     return 0;
 }

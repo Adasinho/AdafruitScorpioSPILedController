@@ -1,10 +1,11 @@
 #include "SolidColorAnimation.hpp"
+#include "Logger.hpp"
 
 SolidColorAnimation::SolidColorAnimation(LedStrip *ledStrip, uint8_t red, uint8_t green, uint8_t blue, uint8_t speed)
     : ledStrip(ledStrip), speed(speed)
 {
     Color* color = ledStrip->getLedColor(0);
-    printf("[SolidColorAnimation] id: %d set color (%d %d %d), current color (%d %d %d)\n", ledStrip->getStripId(), red, green, blue, color->getRed(), color->getGreen(), color->getBlue());
+    Logger::log(LogLevel::DEBUG, "[SolidColorAnimation] id: %d set color (%d %d %d), current color (%d %d %d)", ledStrip->getStripId(), red, green, blue, color->getRed(), color->getGreen(), color->getBlue());
 
     this->targetColor = Color(red, green, blue);
 }
@@ -17,7 +18,7 @@ SolidColorAnimation::SolidColorAnimation(LedStrip *ledStrip, Color targetColor, 
 
 void SolidColorAnimation::nextFrame()
 {
-    //printf("[SolidColorAnimation] Play animation for strip: %d, with %d diodes\n", static_cast<int>(this->ledStrip->getStripId()), this->ledStrip->getLedsCount());
+    //Logger::log(LogLevel::DEBUG, "[SolidColorAnimation] Play animation for strip: %d, with %d diodes", static_cast<int>(this->ledStrip->getStripId()), this->ledStrip->getLedsCount());
 
     int sameLedColorCounter = 0;
 
@@ -43,7 +44,7 @@ void SolidColorAnimation::nextFrame()
     //this->ledStrip->show();
 
     if(sameLedColorCounter == this->ledStrip->getLedsCount()) {
-        //printf("[SolidColorAnimation] Finish animation\n");
+        //Logger::log(LogLevel::DEBUG, "[SolidColorAnimation] Finish animation");
         this->finished = true;
     }   
 }
@@ -85,7 +86,7 @@ Color SolidColorAnimation::generateNewFrameColor(Color currentColor)
     else if(parsedCurrentColorBlue > parsedTargetColorBlue)
         blue = parsedCurrentColorBlue - this->speed < parsedTargetColorBlue ? parsedTargetColorBlue : parsedCurrentColorBlue - this->speed;
 
-    //printf("[SolidColorAnimation] newFrame FROM: (%d %d %d) TO (%d %d %d)\n", parsedTargetColorRed, parsedTargetColorGreen, parsedTargetColorBlue, red, green, blue);
+    //Logger::log(LogLevel::DEBUG, "[SolidColorAnimation] newFrame FROM: (%d %d %d) TO (%d %d %d)", parsedTargetColorRed, parsedTargetColorGreen, parsedTargetColorBlue, red, green, blue);
 
     return Color(red, green, blue);
 }

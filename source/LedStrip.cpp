@@ -1,4 +1,5 @@
 #include "LedStrip.hpp"
+#include "Logger.hpp"
 
 LedStrip::LedStrip()
 {
@@ -8,7 +9,7 @@ LedStrip::LedStrip()
 LedStrip::LedStrip(const LedStripConfig &config, int virtualFirstLedNumber, Adafruit_NeoPXL8 *pixels)
     : config(config), virtualFirstLedNumber(virtualFirstLedNumber), pixels(pixels)
 {
-    printf("[LedStrip] virtualFirstLedNumber: %d\n", virtualFirstLedNumber);
+    Logger::log(LogLevel::DEBUG, "[LedStrip] virtualFirstLedNumber: %d", virtualFirstLedNumber);
 
     for(int i = 0; i < config.getNumLeds(); i++) {
         this->ledsColors.emplace_back(std::make_unique<Color>(0, 0, 0));
@@ -18,7 +19,7 @@ LedStrip::LedStrip(const LedStripConfig &config, int virtualFirstLedNumber, Adaf
 void LedStrip::setLedColor(uint8_t ledNumber, uint8_t red, uint8_t green, uint8_t blue)
 {
     if(ledNumber >= this->getLedsCount()) {
-        printf("[LedStrip] Invalid led number\n");
+        Logger::log(LogLevel::WARNING, "[LedStrip] Invalid led number");
         return;
     }
 
@@ -42,7 +43,7 @@ void LedStrip::setLedColor(uint8_t ledNumber, uint8_t red, uint8_t green, uint8_
     };
 
     int fixedLedNumber = this->virtualFirstLedNumber + ledNumber;
-    //printf("[LedStrip] setLedColor for strip: %d, and diode: %d (aka virtual diode: %d), and color: (%d %d %d)\n", static_cast<int>(this->getStripId()), ledNumber, fixedLedNumber, red, green, blue);
+    //Logger::log(LogLevel::DEBUG, "[LedStrip] setLedColor for strip: %d, and diode: %d (aka virtual diode: %d), and color: (%d %d %d)", static_cast<int>(this->getStripId()), ledNumber, fixedLedNumber, red, green, blue);
 
     // calculate brightness
     float brightnessRatio = this->brightness / 255.f;
@@ -61,7 +62,7 @@ Color* LedStrip::getLedColor(uint8_t ledNumber)
 
 void LedStrip::show()
 {
-    //printf("[LedStrip] show\n");
+    //Logger::log(LogLevel::DEBUG, "[LedStrip] show");
     this->pixels->show();
 }
 

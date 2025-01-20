@@ -10,6 +10,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/source/deps/Adafruit_NeoPixel)
 
 add_executable(Application
+        Logger.cpp
         LedStrip.cpp
         SPISlave.cpp
         SolidColorAnimation.cpp

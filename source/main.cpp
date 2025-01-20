@@ -25,6 +25,7 @@
 #include "AnimationManager.hpp"
 #include "SolidColorAnimation.hpp"
 #include "Utils.hpp"
+#include "Logger.hpp"
 
 const LedStripConfig led_strip_1_config(StripId::STRIP_1, 20, 16); // STRIP 1
 const LedStripConfig led_strip_2_config(StripId::STRIP_2, 20, 17); // STRIP 2
@@ -42,7 +43,7 @@ std::unique_ptr<AnimationManager> animationManager;
 // std::unique_ptr<LedStrip> led_strip_2 = std::make_unique<LedStrip>(led_strip_2_config);
 
 void setupConfiguration() {
-    printf("[Main] setupConfiguration\n");
+    Logger::log(LogLevel::INFO, "[Main] setupConfiguration");
 
     const std::vector<LedStripConfig> configs = {
         led_strip_1_config,
@@ -69,8 +70,8 @@ void setupConfiguration() {
 void recvDataCallback(Package* package) {
     if(package->operation == SET_DIODE_COLOR) {
         SetColorPackage* setColorPackage = reinterpret_cast<SetColorPackage*>(package);
-        //printf("[Callback] Odebrano pakiet set color\n");
-        // printf("Strip number: %d, Diode number: %d, Color(%d, %d, %d)\n",
+        //Logger::log(LogLevel::DEBUG, "[Callback] Odebrano pakiet set color");
+        // Logger::log(LogLevel::DEBUG, "Strip number: %d, Diode number: %d, Color(%d, %d, %d)",
         //     setColorPackage->led_strip_number,
         //     setColorPackage->led_diode_number,
         //     setColorPackage->red,
@@ -91,8 +92,8 @@ void recvDataCallback(Package* package) {
             strip->setBrightness(brightness);
         }
 
-        // printf("Odebrano pakiet set brightness\n");
-        // printf("[Callback] Strip number: %d, brightness: %d\n",
+        // Logger::log(LogLevel::DEBUG, "Odebrano pakiet set brightness");
+        // Logger::log(LogLevel::DEBUG, "[Callback] Strip number: %d, brightness: %d",
         //     setBrightnessPackage->led_strip_number,
         //     setBrightnessPackage->brightness
         // );
@@ -111,7 +112,7 @@ void recvDataCallback(Package* package) {
             );
             uint8_t speed = setStripSolidcolorPackage->speed;
 
-            // printf("[Callback] Set Strip %d solid color: %d, %d, %d\n",
+            // Logger::log(LogLevel::DEBUG, "[Callback] Set Strip %d solid color: %d, %d, %d",
             //     stripId,
             //     setStripSolidcolorPackage->red,
             //     setStripSolidcolorPackage->green,
@@ -120,10 +121,10 @@ void recvDataCallback(Package* package) {
 
             animationManager->playAnimation(stripId, std::make_unique<SolidColorAnimation>(strip, targetColor, speed));
         } else {
-            printf("[MAIN] Can't run animation in invalid strip number: %d\n", setStripSolidcolorPackage->led_strip_number);
+            Logger::log(LogLevel::WARNING, "[MAIN] Can't run animation in invalid strip number: %d", setStripSolidcolorPackage->led_strip_number);
         }
     } else {
-        printf("[Callback] Odebrano nieznany pakiet\n");
+        Logger::log(LogLevel::WARNING, "[Callback] Odebrano nieznany pakiet");
     }   
 }
 
@@ -140,13 +141,13 @@ void core1_entry() {
 
     sleep_ms(1000);
 
-    printf("Core 1 running\n");
+    Logger::log(LogLevel::INFO, "Core 1 running");
 
     // int8_t pins[8] = { 16, 17, 18, 19, 20, 21, 22, 23 };
     // std::unique_ptr<Adafruit_NeoPXL8> pixels = std::make_unique<Adafruit_NeoPXL8>(60, pins, NEO_RGB + NEO_KHZ800);
     // if(!pixels->begin())
     // {
-    //     printf("Can't create NeoPXL8\n");
+    //     Logger::log(LogLevel::ERROR, "Can't create NeoPXL8");
     // } else {
     //     pixels->setBrightness(255);
     //     pixels->setPixelColor(1, 24, 55, 120);
@@ -162,8 +163,6 @@ void core1_entry() {
 }
 
 int main() {
-    
-
     stdio_init_all();
 
     // initial semaphore
@@ -184,7 +183,7 @@ int main() {
     SPISlave<Package> spi(RX, TX, SCK, CS, SPI1, SPEED);
     spi.receivingData(recvDataCallback);
 
-    printf("[main] After spi class\n");
+    Logger::log(LogLevel::INFO, "[main] After spi class");
 
     return 0;
 }
